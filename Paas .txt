@@ -1,0 +1,26 @@
+Practical 8
+Aim: SaaS using Apache.
+
+Step 1: Download practical 8 zip file. Extract zip file. Rename the file name as PRAC8.
+
+Step2: Copy extracted zip file and paste in C driver -> XAMPP -> htdocs
+
+Step 3: In XAMPP server, start Apache.
+
+Step 4: Search ethernet setting. Copy the IPv4 address.
+
+Step 5: Paste the IP4 address. 
+
+Step 6:  In browser URL, instead of dashboard type PRAC8. You will get the following page.
+
+Step 7: Click on tinyfilemanager.php.
+
+Step 8: Enter the username is “admin” and password is “admin@123”. You will get the following page.
+
+Step 9: Click on new Item. Create new folder named as “upload”.
+
+Step 10: In newly created upload folder, add any file using upload option from right corner.
+
+Step 11: After uploading any file you will get that file in list. 
+
+Step 12: If you want to share the file within network to another person then only just type the uploader IP address/foldername. Example: http://192.168.6.192/upload

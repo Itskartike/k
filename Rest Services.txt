@@ -1,0 +1,76 @@
+####Practical No :03
+Aim: Create a simple REST service
+
+Software Tool required:
+•	Code Editior : VS code
+•	API Testing Software Application : Postman
+•	Framework : Flask (micro web framework)
+After Downloading python ,set the path in environment Variable in User Variable > Path > Edit > New and paste the path for python
+New version is 3.13 ,Here the version is 3.12 so following the same for new version.
+
+Till Python 312: Copy Directory path
+Start >python 3.13.1(64 bit) > Open File Location >python3.13.1(6n bit)
+Till python312\Scripts: Copy Directory path
+Start >python 3.13.1(64 bit) > Open File Location >python3.13.1(6n bit) >Open File Location >scripts
+
+Demonstration:
+##Python Programming Language
+Step1 : Install Flask: make sure you have python installed on your system
+
+Open command 
+Step2 : Create a folder name REST_Service,open with vs code and create python file.
+Check and Install Extensions for python
+#Extensions:
+-Python
+-Python Debugger
+
+##Code:
+Python.py
+'''from flask import Flask, jsonify, request
+
+app = Flask(__name__)
+
+# sample data
+data = [
+    {'id': 1, 'name': 'Item 1'},
+    {'id': 2, 'name': 'Item 2'}
+]
+
+# Endpoint to get all items
+@app.route('/items', methods=['GET'])
+def get_items():
+    return jsonify({'items': data})
+
+# Endpoint to get a specific item by ID
+@app.route('/items/<int:item_id>', methods=['GET'])
+def get_item(item_id):
+    item = next((item for item in data if item['id'] == item_id), None)
+    if item:
+        return jsonify({'item': item})
+    else:
+        return jsonify({'message': 'Item not found'}), 404
+
+@app.route('/items', methods=['POST'])
+def add_item():
+    new_item = {'id': len(data) + 1, 'name': request.json['name']}
+    data.append(new_item)
+    return jsonify({'message': 'Item added successfully', 'item': new_item}), 201
+
+# Run the application
+if __name__ == '__main__':
+    app.run(debug=True)    '''
+
+
+For output run "python app.py" in terminal
+
+Open Postman
+#GET
+-Open Postman > JSON > select “GET” and copy paste the url http://127.0.0.1:5000/items and in body select raw send the request .
+
+#POST
+-Select the “POST” and copy paste the url http://127.0.0.1:5000/items and in body select raw and type 
+{
+    "id":3,
+    "name": "Item 3"
+} 
+And send the request .

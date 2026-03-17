@@ -1,0 +1,166 @@
+#####Practical No.6
+Aim: Develop application to download image/video from server or upload image/video to server using MTOM techniques
+
+Software Tools Required:
+•	IDE or Code Editor: Netbeans version 8.0.2
+•	JDK: java jdk version 8
+•	Glassfish Server 4.1
+
+Project Name: ImageTransferApp
+Project Architecture:
+
+Step 1: Create a new Project.
+
+Step 2: Select Java Web >Web Application
+
+Step 3: Provide the project name as “ImageTransferApp” and Click Next.
+
+Step 4: Click Next
+
+Step 5: Click Finish
+
+Expand Project Architecture
+Step 6: Create 2 folder inside the Picture Folder. Folder name: download and upload. Also, download and add an image with name and jpg extension.
+Here image name and extension: book.jpg
+
+Step 7: Right Click on ImageTransferApp Project. New > Web Service
+
+Step 8: Name: ImageWS and Package: mypkg.ws and Finish
+
+Step 9: Enter the following code in ImageWS.java file
+Filename: ImageWS.java.
+
+'''/*
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mypkg.ws;
+import java.io.*;
+import javax.jws.*;
+import javax.xml.ws.soap.MTOM;
+@MTOM(enabled = true, threshold = 60000)
+@WebService(serviceName = "ImageWS")
+public class ImageWS {
+    private static final String PATH = "C:/Users/bhoom/Pictures/upload/";
+    @WebMethod
+    public void upload(
+            @WebParam(name = "filename") String filename,
+            @WebParam(name = "imageBytes") byte[] imageBytes) {
+        try (FileOutputStream fos =
+                     new FileOutputStream(PATH + filename);
+             BufferedOutputStream bos =
+                     new BufferedOutputStream(fos)) {
+            bos.write(imageBytes);
+            bos.flush();
+            System.out.println("Uploaded: " + filename);
+            System.out.println("Bytes received: " + imageBytes.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @WebMethod
+    public byte[] download(
+            @WebParam(name = "filename") String filename) {
+        try {
+            File file = new File(PATH + filename);
+            byte[] bytes = new byte[(int) file.length()];
+            try (FileInputStream fis = new FileInputStream(file);
+                 BufferedInputStream bis =
+                         new BufferedInputStream(fis)) {
+
+                bis.read(bytes);
+            }
+            System.out.println("Downloaded: " + filename);
+            return bytes;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+}'''
+
+Step 10: Clean and Build. Run Project. You will get following output.
+
+Step 11: Right Click on ImageTransferApp > New > Web Service Client. If not available click on Others.
+
+Step 12: Browse the project ImageTransferApp. Add package name “mypkg.clientt”. Click on Finish.
+
+Step 13: Check the projects. mypkg.client folder created automatically.
+
+Step 14: Right Click on Project > new > JSP
+
+Name: index and click Finish
+
+Step 15: Enter the following code inside index.jsp.
+Filename: index.jsp
+
+'''<%-- 
+    Document   : index
+    Created on : 10 Feb, 2026, 9:38:40 PM
+    Author     : bhoom
+--%>
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="java.io.*"%>
+<%@page import="javax.xml.ws.soap.MTOMFeature"%>
+<%@page import="mypkg.client.*"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SOAP Image Upload & Download</title>
+</head>
+<body>
+<h2>Upload Image</h2>
+<%
+ImageWS_Service service = new ImageWS_Service();
+ImageWS port = service.getImageWSPort(new MTOMFeature(60000));
+FileInputStream fis = null;
+try {
+    File file = new File("C:/Users/bhoom/Pictures/book.jpg");
+    byte[] data = new byte[(int) file.length()];
+    fis = new FileInputStream(file);
+    fis.read(data);
+    port.upload(file.getName(), data);
+    out.println("Uploaded: " + file.getName());
+} catch (Exception e) {
+    e.printStackTrace();
+} finally {
+    if (fis != null) fis.close();
+}
+%>
+<hr/>
+<h2>Download Image</h2>
+<%
+FileOutputStream fos = null;
+try {
+    ImageWS_Service service2 = new ImageWS_Service();
+    ImageWS port2 =
+            service2.getImageWSPort(new MTOMFeature(60000));
+    String filename = "book.jpg";
+    byte[] data = port2.download(filename);
+    fos = new FileOutputStream(
+            "C:/Users/bhoom/Pictures/download/" + filename);
+    fos.write(data);
+    out.println("Downloaded: " + filename);
+} catch (Exception e) {
+    e.printStackTrace();
+} finally {
+    if (fos != null) fos.close();
+}
+%>
+</body>
+</html> '''
+
+Step 16: Save the file. Right click on project. Click on Clean and Build. 
+
+Step 17: Right click on Project. Click on deploy.
+
+Step 18: Run the index.jsp file. You will get the following output in browser.
+
+Step 19: Check the upload and download folder you will get the image inside the folders.
+

@@ -1,0 +1,221 @@
+####Practical No.04
+
+Aim: Develop application to consume Google’s search / Google’s Map RESTful Web Service.
+
+Step 1: Download the JDK version 11.0 or Higher.
+
+Step 2: Create a new user variable.
+Environment Variables -> New User variable. Provide the variable name as “JAVA_HOME” and variable value is “C:\Program Files\java\jdk-17
+
+Step 3: Go to terminal check the java version using following command.
+-> Java –version
+
+Step 4: Download Apache tomcat 9.0.98.
+
+Step 5: Create a new folder named as “GoogleMaps” in desktop. Extract the downloaded Apache tomcat zipped file in GoogleMaps folder.
+
+Step 6: There are two ways to keep running Tomcat apache server in the background.
+Method 1: Open the apache folder till bin folder. Go to the “startup” batch file and double click on it. Now, you can see Tomcat Apache server is running.
+Method 2: We can also by clicking the directory path and type CMD.  In terminal type the command “ startup.bat” and hit enter.
+Note: Tomcat server should keep running in the background by minimizing it.
+
+Step 7: In Apache tomcat you can see web apps folder. Open the web apps folder and create a new folder name it as “myjsp”.
+
+Step 8: Open myjsp folder in vs code.
+
+Step 9: Create a new file give the file name as “myindex.jsp”.
+
+'''<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Google Maps Location (Safe)</title>
+        <style>
+            html,
+            body {
+                height: 100%;
+                margin: 0;
+            }
+
+            #map {
+                height: 70vh;
+                width: 100%;
+            }
+
+            .wrap {
+                max-width: 960px;
+                margin: 0 auto;
+                padding: 1rem;
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            }
+
+            .card {
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                padding: 1rem;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            }
+
+            .error {
+                color: #b91c1c;
+                background: #fee2e2;
+                border: 1px solid #fecaca;
+                padding: .5rem .75rem;
+                border-radius: .5rem;
+            }
+
+            .muted {
+                color: #6b7280;
+                font-size: 0.9rem;
+            }
+        </style>
+        <% String latStr=request.getParameter("t1"); String lngStr=request.getParameter("t2"); Double lat=null; Double
+            lng=null; String error=null; try { if (latStr !=null && lngStr !=null && !latStr.trim().isEmpty() &&
+            !lngStr.trim().isEmpty()) { lat=Double.valueOf(latStr.trim().replace(',', '.' ));
+            lng=Double.valueOf(lngStr.trim().replace(',', '.' )); if (lat < -90 || lat> 90 || lng < -180 || lng> 180) {
+                throw new IllegalArgumentException("Coordinates out of range");
+                }
+                }
+                } catch (Exception ex) {
+                error = "Invalid coordinates: " + ex.getMessage();
+                }
+
+                double defLat = 28.6139; // Default latitude
+                double defLng = 77.2090; // Default longitude
+                %>
+
+    </head>
+
+    <body>
+        <div class="wrap">
+            <h1>Google Maps Location</h1>
+            <p class="muted">This page reads <code>t1</code> (latitude) and <code>t2</code> (longitude) from the query
+                string and centers the map.</p>
+
+            <% if (error !=null) { %>
+                <p class="error">
+                    <%= error %>. Showing default location instead.
+                </p>
+                <% } else if (lat==null || lng==null) { %>
+                    <p class="muted">Tip: open <code>myinput.jsp</code> and submit coordinates. Example: 28.6139,
+                        77.2090</p>
+                    <% } %>
+
+                        <div id="map" class="card"></div>
+
+                        <div class="card" style="margin-top:1rem;">
+                            <p><strong>Current center:</strong>
+                                Lat: <span id="latSpan"></span> ,
+                                Lng: <span id="lngSpan"></span>
+                            </p>
+                        </div>
+        </div>
+
+        <script>
+            // Values from server (fallback to defaults if missing)
+            const serverLat = <%= (lat != null ? lat : defLat) %>;
+            const serverLng = <%= (lng != null ? lng : defLng) %>;
+            const hasUserInput = <%= (lat != null && lng != null) ? "true" : "false" %>;
+
+            function initMap() {
+                const center = { lat: serverLat, lng: serverLng };
+                const map = new google.maps.Map(document.getElementById("map"), {
+                    center,
+                    zoom: hasUserInput ? 14 : 11,
+                });
+                new google.maps.Marker({ position: center, map });
+
+                // Show the numbers
+                document.getElementById("latSpan").textContent = center.lat.toFixed(6);
+                document.getElementById("lngSpan").textContent = center.lng.toFixed(6);
+
+                // Allow user to click to move marker and update display (no server roundtrip)
+                map.addListener("click", (e) => {
+                    const pos = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+                    map.setCenter(pos);
+                    marker.setPosition(pos);
+                    document.getElementById("latSpan").textContent = pos.lat.toFixed(6);
+                    document.getElementById("lngSpan").textContent = pos.lng.toFixed(6);
+                });
+                const marker = new google.maps.Marker({ position: center, map, draggable: true });
+                marker.addListener("dragend", () => {
+                    const p = marker.getPosition();
+                    const pos = { lat: p.lat(), lng: p.lng() };
+                    document.getElementById("latSpan").textContent = pos.lat.toFixed(6);
+                    document.getElementById("lngSpan").textContent = pos.lng.toFixed(6);
+                });
+            }
+        </script>
+
+        <!-- IMPORTANT: Replace YOUR_API_KEY with your real Google Maps API key.
+       Enable the Maps JavaScript API in Google Cloud. -->
+        <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyALU5Mx4kXMGv8U--GxWrHvQ4h1EHgpkwc&callback=initMap"></script>
+    </body>
+
+    </html>
+'''
+Step 10: Create a new file give the file name as “myinput.jsp”.
+
+'''<%@ page contentType="text/html" pageEncoding="UTF-8" %>
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Enter Latitude and Longitude</title>
+    </head>
+
+    <body>
+        <!-- Form to accept input values for latitude and longitude -->
+        <form action="myindex.jsp" method="get">
+            <pre>
+            Enter latitude: <input type="text" name="t1" />
+            Enter longitude: <input type="text" name="t2" />
+            <input type="submit" value="Show" />
+        </pre>
+        </form>
+    </body>
+
+    </html>
+'''
+
+Step 11: Open Google Cloud Platform Console, 
+Free Trial and Free Tier Services and Products | Google Cloud
+Click on Console
+
+Step-by-Step Guide to Implement Google Maps API with JSP
+1. Get Your Google Maps API Key
+•	First, you need to obtain an API key from Google Cloud Console to use the Google Maps JavaScript API. Follow these steps: 
+o	Go to Google Cloud Console.
+o	Create a new project (or select an existing one).
+o	Enable the Maps JavaScript API. (Instead of Places API and Geocoding API)
+o	Under Credentials, create an API Key and copy it.
+Demonstration: Here we have existing projects, now click on NEW PROJECT
+
+Project Name: GoogleMapsAPI and click CREATE
+
+-Now we can see our new project GoogleMapsAPI and Notifications of new project
+-Search, Click and Enable the Maps JavaScript API.
+-After Enabling Maps JavaScript API, it will show notifications and also redirect to billing method (Ignore billing method) 
+-Now click on Navigation Menu
+-APIs & Services > Credentials
+-Click + CREATE CREDENTIALS > API Key
+-We got the API Key Created, Copy the API Key and paste it in myindex.jsp file
+-Now, open myjsp folder and open with VS Code and paste the API_KEY in myindex.jsp script tag:
+Shown below:
+Before:<!-- Google Maps JavaScript API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY &callback=initMap" async defer></script>
+After: :<!-- Google Maps JavaScript API --><script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAiofE1T6K975oNisc37nvURK7c87XR7e4 &callback=initMap" async defer></script>
+ 
+Step 5: Now to check the output, open a web browser Google Chrome or Microsoft Edge Ctrl + Click to follow the Link, URL: http://localhost:8080/myjsp/myinput.jsp
+Demonstration:
+
+Enter Example latitude and longitude of any place
+Here, latitude and longitude coordinates of city: Madurai 
+Latitude: 9.939093  
+Longitude:  78.121719

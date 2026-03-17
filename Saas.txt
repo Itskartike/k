@@ -1,0 +1,66 @@
+Practical No 07
+Aim: Implement Platform as a Service (PaaS) by installing and running a Flask web application inside a Lubuntu virtual machine using VirtualBox, with a Python virtual environment and host-based access via the VM’s IP address.
+
+Step 1: Download lubuntu ISO file
+
+Step 2: Set Up Virtual Machine
+Create a New VM
+•	Open VirtualBox → Click New.
+•	Name: Lubuntu
+•	Type: Linux
+•	Version: Ubuntu (64 bit)
+Allocate Resources
+•	Memory: At least 2 GB RAM (more if possible).
+•	Disk: Create a virtual hard disk (20 GB recommended).
+Mount ISO
+•	Go to Settings → Storage.
+•	Under “Controller: IDE,” click the empty disk icon → Choose a disk file → Select the Lubuntu ISO you downloaded.
+
+Step 3: Boot Lubuntu in VM
+•	Start the VM.
+•	The Lubuntu boot menu will appear.
+•	Select “Try Lubuntu” (instead of Install).
+This will launch a live session of Lubuntu directly from the ISO, allowing you to test the OS without installing it.
+
+Step 4: After open Lubuntu the open Terminal and type command to Update Package Lists
+	sudo apt-get update 
+
+Step 5: Create and Enter a New Folder
+	sudo mkdir folder_name(like : WS&CC)
+	cd folder_name
+
+Step 6: Install Python Virtual Environment Tools
+	sudo apt install python3-venv -y
+
+Step 7: Create a Virtual Environment and Activate the Virtual Environment
+	python3 -m venv myenv
+	source myenv/bin/activate
+
+Step 8: Install Flask
+	pip install flask
+
+Step 9: Create a Flask File
+Inside your folder (WS&CC), create a new file called app.py:
+	sudo nano app.py
+Paste the following code:
+from flask import Flask
+app = Flask(__name__)
+@app.route("/")
+def home():
+    return "Hello, Flask is working!"
+@app.route("/about")
+def about():
+    return "This is About Page!"
+if __name__ == "__main__":
+    app.run(debug=True)
+
+Save and exit Nano: Press Ctrl + O → Enter → Ctrl + X.
+
+Step 10: Run the Flask App
+Make sure your virtual environment is active (source myenv/bin/activate), then run:
+	python3 app.py
+You’ll see output like:
+* Running on http://127.0.0.1:5000/ 
+* Running on http://182.168.62.154:5000/ 
+
+Step 11: To test we have to check our Lubuntu IP address, just type ifconfig and copy the IP address and paste to Main machine browser.

@@ -1,0 +1,107 @@
+Practical No:
+Aim: To connect a Java application with Amazon Simple Workflow Service (SWF) using AWS SDK and retrieve registered workflow domains.
+
+Step 1: AWS Console Login
+1.	Open browser
+2.	Go to: https://aws.amazon.com/console/
+3.	Login using Root user 
+4.	After login then search IAM
+ 
+Step 2: Create IAM User
+1.	Go to IAM
+2.	Click Users
+3.	Click Create User
+4.	Enter user name: aws-java-user
+5.	Click Next
+ 
+Step 3: Set Permissions
+1.	Select Attach policies directly
+2.	Search: AdministratorAccess
+3.	Select the policy
+4.	Click Next
+ 
+Step 4: Review and Create User
+1.	Review details
+2.	Click Create User
+ 
+Step 5: User Created Successfully
+After creation:
+1.	Click on created user
+2.	Go to Security Credentials
+ 
+
+Step 6: Create Access Key
+1.	Scroll to Access Keys
+2.	Click Create Access Key
+ 
+Step 7: Select Use Case
+1.	Select: Command Line Interface (CLI)
+2.	Click Next
+ 
+
+Step 8: Create Access Key
+1.	Click Create Access Key
+2.	Copy Access Key and Copy Secret Access Key OR Click Download .csv file
+ 
+Step 9: Then Download AWSCLI.msi Which is located on WSCC folder
+Step 10 : Configure AWS CLI
+Open Command Prompt and type: aws configure
+Enter:
+•	Access Key
+•	Secret Key
+•	Region: ap-south-1
+•	Output format: json
+ 
+Step 11: NetBeans Project Creation Steps
+1.	Open Apache NetBeans IDE
+2.	Click on File → New Project
+3.	Select Maven → Java Application
+4.	Enter Project Name as AWSWorkFlow
+5.	Click Finish
+ 
+Step 12: Go to Project Files -> pom.xml Configuration
+Open pom.xml and add the following dependencies:
+if any other version is written, replace it with:
+<properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+</properties>
+Add Dependencies Inside the project:
+<dependencies>
+    <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>swf</artifactId>
+        <version>2.25.28</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>2.0.9</version>
+    </dependency>
+</dependencies>
+
+Step 13: Create Class, Right Click on AWSWorkFlow project -> New -> Java Class and give the file name AWSConnect  and Click finish
+Java Implementation Code:
+import software.amazon.awssdk.services.swf.SwfClient;
+import software.amazon.awssdk.services.swf.model.ListDomainsRequest;
+import software.amazon.awssdk.services.swf.model.ListDomainsResponse;
+import software.amazon.awssdk.regions.Region;
+public class AWSConnect {
+    public static void main(String[] args) {
+        SwfClient swf = SwfClient.builder()
+                .region(Region.AP_SOUTH_1)
+                .build();
+        System.out.println("Connected to AWS SWF!");
+        ListDomainsRequest request = ListDomainsRequest.builder()
+                .registrationStatus("REGISTERED")
+                .build();
+        ListDomainsResponse response = swf.listDomains(request);
+        System.out.println(response);
+    }
+}
+
+Step 14: Running the Project
+Right click on the project in NetBeans and click on Build and Click.
+After Success of Build and Click then Right click on the project in NetBeans and click Run.
+The application will connect to AWS SWF and display the registered domains.

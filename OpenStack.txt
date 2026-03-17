@@ -1,0 +1,100 @@
+To install and configure OpenStack, create a new user, and create a private network for launching instances.
+
+2. Requirements
+
+Hardware:
+- 8 GB RAM (Minimum)
+- 2 CPU cores
+- 50 GB Storage
+
+Software:
+- Ubuntu Server 22.04
+- VirtualBox / VMware
+- OpenStack (DevStack)
+
+3. Installation of OpenStack (Using DevStack)
+
+Step 1: Update System
+sudo apt update && sudo apt upgrade -y
+
+Step 2: Create Stack User
+sudo useradd -s /bin/bash -d /opt/stack -m stack
+sudo passwd stack
+sudo usermod -aG sudo stack
+su - stack
+
+Step 3: Install Git
+sudo apt install git -y
+
+Step 4: Download DevStack
+git clone https://opendev.org/openstack/devstack
+cd devstack
+
+Step 5: Create local.conf
+[[local|localrc]]
+ADMIN_PASSWORD=admin
+DATABASE_PASSWORD=admin
+RABBIT_PASSWORD=admin
+SERVICE_PASSWORD=admin
+HOST_IP=your_ip_address
+
+Step 6: Start Installation
+./stack.sh
+
+4. Access Horizon Dashboard
+
+Open browser:
+http://<your-ip>/dashboard
+
+Login Credentials:
+Username: admin
+Password: admin
+
+5. Create New User
+
+Using Horizon Dashboard:
+Identity → Users → Create User
+
+Fill:
+Name: student1
+Password: student123
+Role: Member
+Project: demo
+
+Using CLI:
+source openrc
+openstack user create student1 --password student123
+openstack role add --project demo --user student1 member
+
+6. Create Private Network
+
+Using Horizon:
+Project → Network → Networks → Create Network
+
+Network Name: private-net
+Subnet Name: private-subnet
+Network Address: 192.168.1.0/24
+Gateway: 192.168.1.1
+
+Using CLI:
+openstack network create private-net
+openstack subnet create private-subnet --network private-net --subnet-range 192.168.1.0/24
+
+7. Verification
+
+openstack network list
+openstack subnet list
+openstack user list
+
+8. Architecture Flow
+
+User → Horizon → Keystone
+                   ↓
+                Nova
+                   ↓
+               Neutron → Private Network (192.168.1.0/24)
+
+9. Conclusion
+
+In this practical, we successfully installed OpenStack using DevStack, created a new user, created a private network, and verified the configuration successfully.
+

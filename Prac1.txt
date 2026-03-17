@@ -1,0 +1,150 @@
+####Practical 01
+Aim: Define a simple service like converting Rupees into Dollars and call it from different platform like JAVA and .NET
+
+Software Tools Required:
+•	Code Editor: VS code
+•	API Testing Software Application: Postman
+•	Framework: Express.js
+•	Runtime Environment: Node.js
+•	Programming language: JavaScript, Java, C#
+Downloads Required:
+•	Node.js
+•	JDK (Download JDK latest version or higher version than 11.0)
+•	.NET SDK
+•	Postman
+
+Demonstration:
+1. For dotnet C:\Users\Admin\Downloads\TYCS_WS&CC_SOFTWARE
+Step 1: After Downloading Node.js, JDK and .NET SDK, Set the path in environment variable in user variables for admin > Path > Edit > New and Paste the Path for Node.js, JDK and .NET SDK.
+
+Step 2: Create Folder on Desktop “Practical_1” and in cmd Implement the Service
+->mkdir currency-conversion-service
+->cd currency-conversion-service
+->npm init -y
+->npm install express body-parser
+
+Step 3: Open VS Code -> Open  Folder -> Practical1 -> Server.js
+
+Step 4:  Code
+'''#Server.js
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+app.use(bodyParser.json());
+app.post('/convert',(req,res)=>{
+    const amountInRs = req.body.amount_in_rs;
+    const conversionRate = 0.0145;
+    const amountInUsd = amountInRs * conversionRate;
+    res.json({amount_in_usd : amountInUsd});
+});
+app.listen(port,()=>{
+    console.log(`Currency conversion service running on http://localhost:${port}`);
+});'''
+
+for output command in terminal : -> cd currency-conversion-service
+                                  -> node server.js
+
+Open Postman
+search http://localhost:3000
+-------------------------------------------------------------------------
+##Part B : Java Programming Language
+Step 1: Create folder name: Java_Client and Install the following Extension.(Java,langauge support for java by red hat)
+Open VsCode again using new window and open folder Java_Client in that download the following extension.
+
+Step 2:  Create a New File in Java_Client folder as JavaClient.java
+
+Step 3:  Type the following command:->cd Java_Client
+                                    ->java –version
+
+Step 4:  Code: Java_Client.java
+'''import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse.BodyHandlers;
+
+public class JavaClient {
+    public static void main(String[] args) throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        String uri = "http://localhost:3000/convert";
+        String requestBody = "{\"amount_in_rs\":1000}";
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri))
+                .header("Content-Type", "application/json")
+                .POST(BodyPublishers.ofString(requestBody))
+                .build();
+        client.sendAsync(request, BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenAccept(System.out::println)
+                .join();
+    }         
+}'''
+
+Step 5:  To run this first run the server.js file and then run the JavaClient file (USE Cmd : node server.js)
+NOTE: If you are getting Java Path related error, use the following command:
+
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+$env:JAVA_HOME = "C:\Program Files\Java\jdk-17.0.1
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+java -version
+
+Step 6:  To run type the following commands:
+   ->cd Java_client
+   ->javac JavaClient.java
+   ->java JavaClient
+Output will be shown 
+-----------------------------------------------------------------------------------------
+##Part C:.NET Programming Language 
+Step 1:Create Folder name .NET Client and install the following Extensions.
+
+Step 2: Open VsCode again using new window and open folder .NET_Client in that download the following extension.
+  -C#
+  -C# Snippets
+  -C# Dev kit
+  -C# Extensions
+
+Step 3: .Click on View > Terminal and type the following command
+-	dotnet new console
+-	dotnet restore
+-	After entering dotnet new console command the file architecture will generate the .NET Project with the Progarm.cs file 
+
+Step 4:Write the code in Program.cs
+
+Code:
+'''using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+class Program
+{
+    static async Task Main()
+    {
+        try
+        {
+            var client = new HttpClient();
+            var apiUrl = "http://localhost:3000/convert";
+            var requestBody = new
+            {
+                amount_in_rs = 1000
+            };
+            var jsonRequestBody = System.Text.Json.JsonSerializer.Serialize(requestBody);
+            var response = await client.PostAsync(apiUrl , new StringContent(jsonRequestBody,Encoding.UTF8,"application/json"));
+            if(response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Response Code :" + response.StatusCode);
+                Console.WriteLine("Response Body:" +await response.Content.ReadAsStringAsync());
+            }
+            else
+            {
+                Console.WriteLine("Error:" + response.StatusCode);
+                Console.WriteLine("Details:" +await response.Content.ReadAsStringAsync());
+            }
+        }
+        catch (HttpRequestException e)
+        {
+        Console.WriteLine("An error occured:" +e.Message);    
+        }}}'''
+
+For output: dotnet run (in terminal)
